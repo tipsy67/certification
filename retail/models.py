@@ -1,7 +1,9 @@
 from django.db import models
 
+GRAND_LEVEL = 'PLNT'
+
 MEMBER_TYPE = (
-    ('PLNT', 'plant'),
+    (GRAND_LEVEL, 'plant'),
     ('INDV', 'individual'),
     ('RTL', 'retail')
 )
@@ -44,6 +46,7 @@ class Product(models.Model):
 class Member(models.Model):
     name = models.CharField(max_length=100, verbose_name='наименование')
     member_type = models.CharField(max_length=4, choices=MEMBER_TYPE, verbose_name='тип звена')
+    member_level = models.PositiveSmallIntegerField(editable=False, verbose_name='уровень')
     accounts_payable = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='кредиторка')
     created_at = models.DateField(auto_now_add=True, verbose_name='дата создания')
     updated_at = models.DateField(auto_now=True, verbose_name='дата изменения')
