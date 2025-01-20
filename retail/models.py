@@ -53,7 +53,9 @@ class Member(models.Model):
     accounts_payable = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name='кредиторка')
     created_at = models.DateField(auto_now_add=True, verbose_name='дата создания')
     updated_at = models.DateField(auto_now=True, verbose_name='дата изменения')
-    supplier = models.ForeignKey(to='Member', on_delete=models.PROTECT, **NULLABLE, verbose_name='поставщик')
+    supplier = models.ForeignKey(to='Member', on_delete=models.PROTECT, **NULLABLE, related_name='buyers', verbose_name='поставщик')
+    need_recalc = models.BooleanField(editable=False, default=False, verbose_name='уровень')
+
 
     class Meta:
         verbose_name = 'элемент сети'
@@ -72,3 +74,5 @@ class Member(models.Model):
         if self.pk == self.supplier.pk:
             raise ValidationError("Поставщик не может ссылаться сам на себя")
 
+
+    # def deep_find(self):

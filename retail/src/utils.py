@@ -9,8 +9,8 @@ def calc_level_member(instance: Member):
 
 
 def recalc_level_buyer(instance: Member):
-    buyer: Member = Member.objects.filter(supplier=instance).first()
-    if buyer is not None:
-        buyer.member_level = instance.member_level + 1
-        buyer.save()
-        recalc_level_buyer(buyer)
+    buyers: Member = Member.objects.filter(supplier=instance)
+    if buyers is not None:
+        for buyer in buyers:
+            # buyer.member_level = instance.member_level + 1
+            buyer.save()
