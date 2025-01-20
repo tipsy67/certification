@@ -73,6 +73,17 @@ class Member(models.Model):
     def clean(self):
         if self.pk == self.supplier.pk:
             raise ValidationError("Поставщик не может ссылаться сам на себя")
+        if self.supplier in self.descendants():
+            raise ValidationError("Циклические ссылки в сети не допустимы")
 
 
+    def descendants(self):
+        return Member.get_buyers_list(self)
+
+    @staticmethod
+    def get_buyers_list(instance):
+        buyers = list(instance.buyers.all())
+        for buyer in instance.buyers.all():
+            buyers.extend(Member.get_buyers_list(buyer))
+        return buyers
 
