@@ -1,19 +1,45 @@
 from django.contrib import admin
 
+from django.urls import reverse
+from django.utils.html import format_html
+
 from retail.models import Contact, Product, Member
 
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('email', 'country', 'city', 'created_at', 'updated_at', )
+
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     pass
 
-
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'city', 'display_member_type', 'member_level', 'accounts_payable', 'updated_at', 'supplier_link')
+    actions = ('clear_accounts_payable',)
 
+    search_fields = ('name', 'contacts__city')
+    list_filter = ('name', 'contacts__city')
+
+    @admin.action(description="очистить задолженность перед поставщиком")
+    def clear_accounts_payable(self, request, queryset):
+        count = queryset.update(accounts_payable=0)
+        self.message_user(request, f"Изменено {count} записи(ей).")
+
+    @admin.display(description='поставщик')
+    def supplier_link(self, instance):
+        if instance.supplier is not None:
+            url = reverse('admin:retail_member_change', args=[instance.supplier.pk])
+            return format_html('<a href="{}">{}</a>', url, instance.supplier.name)
+        return "нет поставщика"
+
+    @admin.display(description='город')
+    def city(self, instance):
+        contact = instance.contacts.all().first()
+        if contact is not None:
+            url = reverse('admin:retail_contact_change', args=[contact.pk])
+            return format_html('<a href="{}">{}</a>', url, contact.city)
+        return "нет контактов"

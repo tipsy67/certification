@@ -1,11 +1,14 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from config.settings import NULLABLE
+
 
 GRAND_LEVEL = 'PLNT'
 
 MEMBER_TYPE = (
-    (GRAND_LEVEL, 'plant'),
-    ('INDV', 'individual'),
-    ('RTL', 'retail')
+    (GRAND_LEVEL, 'Завод'),
+    ('INDV', 'Индивидуальный предприниматель'),
+    ('RTL', 'Розничная сеть')
 )
 
 class Contact(models.Model):
@@ -21,7 +24,7 @@ class Contact(models.Model):
     class Meta:
         verbose_name = 'контакт'
         verbose_name_plural = 'контакты'
-        ordering = ['-created_at']
+        ordering = ['-updated_at']
 
     def __str__(self):
         return f"{self.email}"
@@ -46,11 +49,11 @@ class Product(models.Model):
 class Member(models.Model):
     name = models.CharField(max_length=100, verbose_name='наименование')
     member_type = models.CharField(max_length=4, choices=MEMBER_TYPE, verbose_name='тип звена')
-    member_level = models.PositiveSmallIntegerField(editable=False, verbose_name='уровень')
-    accounts_payable = models.DecimalField(max_digits=15, decimal_places=2, verbose_name='кредиторка')
+    member_level = models.PositiveSmallIntegerField(editable=False, default=0, verbose_name='уровень')
+    accounts_payable = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name='кредиторка')
     created_at = models.DateField(auto_now_add=True, verbose_name='дата создания')
     updated_at = models.DateField(auto_now=True, verbose_name='дата изменения')
-    supplier = models.OneToOneField(to='Member', on_delete=models.PROTECT, verbose_name='поставщик')
+    supplier = models.ForeignKey(to='Member', on_delete=models.PROTECT, **NULLABLE, verbose_name='поставщик')
 
     class Meta:
         verbose_name = 'элемент сети'
@@ -58,4 +61,14 @@ class Member(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f"{self.name} {self.member_type}"
+        return f"{self.name} ({self.display_member_type})"
+
+    @property
+    def display_member_type(self):
+        return dict(MEMBER_TYPE).get(f"{self.member_type}", "ошибка")
+
+
+    def clean(self):
+        if self.pk == self.supplier.pk:
+            raise ValidationError("Поставщик не может ссылаться сам на себя")
+
