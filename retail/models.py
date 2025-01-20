@@ -75,4 +75,4 @@ class Member(models.Model):
             raise ValidationError("Поставщик не может ссылаться сам на себя")
 
 
-    # def deep_find(self):
+
