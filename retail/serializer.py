@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from retail.models import Contact, Member
+from retail.models import Contact, Member, GRAND_LEVEL, MEMBER_TYPE
+from retail.src.field_validators import are_fields_valid
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -8,13 +9,24 @@ class ContactSerializer(serializers.ModelSerializer):
            model = Contact
            fields = '__all__'
 
+class ContactWithMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+           model = Contact
+           fields = '__all__'
+           extra_kwargs = {
+            'member': {'required': False},
+           }
 
 class MemberSerializer(serializers.ModelSerializer):
-    contacts = ContactSerializer(many=True,)
+    contacts = ContactWithMemberSerializer(many=True,)
 
     class Meta:
         model = Member
-        fields = ('pk', 'name',  'display_member_type', 'member_level', 'accounts_payable', 'supplier', 'contacts')
+        fields = ('pk', 'name',  'member_type', 'member_level', 'accounts_payable', 'supplier', 'contacts')
+        extra_kwargs = {
+            'member_level': {'required': False, 'read_only': True},
+            'pk': {'read_only': True},
+        }
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -22,8 +34,7 @@ class MemberSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-        if self.is_valid():
-            pass
+
         rel_obj_validated_data = validated_data.pop('contacts', [])
         rel_validate_data = next(iter(rel_obj_validated_data or []), None)
 
@@ -41,9 +52,25 @@ class MemberSerializer(serializers.ModelSerializer):
                 related_obj.save()
 
 
-
         for key, value in validated_data.items():
             setattr(instance, key, value)
         instance.save()
 
         return instance
+
+
+    def create(self, validated_data):
+        contact_data = validated_data.pop('contacts')
+        member = Member.objects.create(**validated_data)
+        if member:
+            if len(contact_data)>0:
+                contact = Contact.objects.get_or_create(member=member, **contact_data[0])
+
+        return member
+
+    def validate(self, data):
+        pk = self.instance.pk
+        valid, context = are_fields_valid(data, pk)
+        if not valid:
+            raise serializers.ValidationError(context)
+

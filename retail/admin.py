@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
+from retail.forms import MemberForm
 from retail.models import Contact, Product, Member
 
 
@@ -18,7 +19,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('name', 'city', 'display_member_type', 'member_level', 'accounts_payable', 'updated_at', 'supplier_link')
+    form = MemberForm
+    list_display = ('pk', 'name', 'city', 'display_member_type', 'member_level', 'accounts_payable', 'updated_at', 'supplier_link')
+    list_display_links = ('name', )
     actions = ('clear_accounts_payable',)
 
     search_fields = ('name', 'contacts__city')
