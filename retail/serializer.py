@@ -1,8 +1,14 @@
+from copy import copy
+
 from rest_framework import serializers
 
-from retail.models import Contact, Member, GRAND_LEVEL, MEMBER_TYPE
+from retail.models import Contact, Member, Product
 from retail.src.field_validators import are_fields_valid
 
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+           model = Product
+           fields = '__all__'
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,13 +25,15 @@ class ContactWithMemberSerializer(serializers.ModelSerializer):
 
 class MemberSerializer(serializers.ModelSerializer):
     contacts = ContactWithMemberSerializer(many=True,)
+    products = ProductSerializer(many=True,)
 
     class Meta:
         model = Member
-        fields = ('pk', 'name',  'member_type', 'member_level', 'accounts_payable', 'supplier', 'contacts')
+        fields = ('pk', 'name',  'member_type', 'member_level', 'accounts_payable', 'supplier', 'contacts', 'products')
         extra_kwargs = {
             'member_level': {'required': False, 'read_only': True},
             'pk': {'read_only': True},
+            'accounts_payable': {'read_only': True},
         }
 
     def to_representation(self, instance):
@@ -38,12 +46,15 @@ class MemberSerializer(serializers.ModelSerializer):
         rel_obj_validated_data = validated_data.pop('contacts', [])
         rel_validate_data = next(iter(rel_obj_validated_data or []), None)
 
-        rel_obj_data = self.initial_data.get('contacts')
-        rel_data = next(iter(rel_obj_data or []), None)
+        # rel_obj_data = self.initial_data.get('contacts')
+        # rel_data = next(iter(rel_obj_data or []), None)
+        member_pk = instance.pk
+        rel_data = Contact.objects.filter(member=member_pk).first()
 
         if rel_validate_data is not None:
             related_obj, created = Contact.objects.get_or_create(
-                    pk=rel_data.get('id', None),
+                    pk=getattr(rel_data, 'pk', None),
+                    member_id=member_pk,
                     defaults=rel_validate_data
                 )
             if not created:
@@ -74,3 +85,4 @@ class MemberSerializer(serializers.ModelSerializer):
         if not valid:
             raise serializers.ValidationError(context)
 
+        return data

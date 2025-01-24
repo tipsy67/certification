@@ -1,3 +1,5 @@
+from copy import copy
+
 from django.contrib import admin
 
 from django.urls import reverse
@@ -15,7 +17,19 @@ class ContactAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    pass
+    actions = ('copy_product',)
+    search_fields = ('name',)
+
+    @admin.action(description="скопировать выделенные продукты")
+    def copy_product(self, request, queryset):
+        count = 0
+        for instance in queryset:
+            new_instance = copy(instance)
+            new_instance.pk = None
+            new_instance.save()
+            count += 1
+
+        self.message_user(request, f"Скопировано {count} записи(ей).")
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):

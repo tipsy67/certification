@@ -8,13 +8,13 @@ def are_fields_valid(data, pk):
     member_type = data.get('member_type',None)
 
     if member_type != GRAND_LEVEL and supplier is None:
-        context = (f"Параметр 'supplier'('поставщик') обязателен для типа организации,"
-                   f" отличной от типа '{GRAND_LEVEL}'('{GRAND_NAME}')")
+        context = (f"Параметр 'supplier'(поставщик) обязателен для типа организации,"
+                   f" отличной от типа '{GRAND_LEVEL}'({GRAND_NAME})")
         return False, context
 
     if (member_type is None or member_type == GRAND_LEVEL) and supplier is not None:
-        context = (f"Параметр 'supplier'('поставщик') должен быть 'null' если 'member_type'"
-                   f"('тип звена')='{GRAND_LEVEL}'('{GRAND_NAME}') или 'null' ")
+        context = (f"Параметр 'supplier'(поставщик) должен быть 'null' если 'member_type'"
+                   f"(тип звена)='{GRAND_LEVEL}'({GRAND_NAME}) или 'null' ")
         return False, context
 
     if pk and supplier:
