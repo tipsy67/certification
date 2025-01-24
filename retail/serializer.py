@@ -25,7 +25,7 @@ class ContactWithMemberSerializer(serializers.ModelSerializer):
 
 class MemberSerializer(serializers.ModelSerializer):
     contacts = ContactWithMemberSerializer(many=True,)
-    products = ProductSerializer(many=True,)
+    products = ProductSerializer(many=True, read_only=True)
 
     class Meta:
         model = Member
@@ -61,7 +61,6 @@ class MemberSerializer(serializers.ModelSerializer):
                 for key, value in rel_validate_data.items():
                     setattr(related_obj, key, value)
                 related_obj.save()
-
 
         for key, value in validated_data.items():
             setattr(instance, key, value)
