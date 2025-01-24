@@ -5,7 +5,7 @@ from retail.models import Member
 from retail.src.utils import calc_level_member, recalc_level_buyer
 
 
-@receiver(pre_save, sender=Member, dispatch_uid="member_pre_save_handler")
+@receiver(pre_save, sender=Member, weak=False, dispatch_uid="member_pre_save_handler")
 def member_pre_save_handler(sender, instance: Member, *args, **kwargs):
     # return None
     calc_level_member(instance)
@@ -16,8 +16,8 @@ def member_pre_save_handler(sender, instance: Member, *args, **kwargs):
                 instance.need_recalc = True
 
 
-@receiver(post_save, sender=Member, dispatch_uid="member_post_save_handler")
+@receiver(post_save, sender=Member, weak=False, dispatch_uid="member_post_save_handler")
 def member_post_save_handler(sender, instance: Member, *args, **kwargs):
-    # return None
-    if instance.need_recalc:
-        recalc_level_buyer(instance)
+    if instance is not None:
+        if instance.need_recalc:
+            recalc_level_buyer(instance)
