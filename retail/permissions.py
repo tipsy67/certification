@@ -8,4 +8,3 @@ class IsActive(BasePermission):
             return True
 
         return False
-

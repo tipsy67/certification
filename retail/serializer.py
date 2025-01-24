@@ -1,35 +1,48 @@
-from copy import copy
-
 from rest_framework import serializers
 
 from retail.models import Contact, Member, Product
 from retail.src.field_validators import are_fields_valid
 
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-           model = Product
-           fields = '__all__'
+        model = Product
+        fields = '__all__'
+
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
-           model = Contact
-           fields = '__all__'
+        model = Contact
+        fields = '__all__'
+
 
 class ContactWithMemberSerializer(serializers.ModelSerializer):
     class Meta:
-           model = Contact
-           fields = '__all__'
-           extra_kwargs = {
+        model = Contact
+        fields = '__all__'
+        extra_kwargs = {
             'member': {'required': False},
-           }
+        }
+
 
 class MemberSerializer(serializers.ModelSerializer):
-    contacts = ContactWithMemberSerializer(many=True,)
+    contacts = ContactWithMemberSerializer(
+        many=True,
+    )
     products = ProductSerializer(many=True, read_only=True)
 
     class Meta:
         model = Member
-        fields = ('pk', 'name',  'member_type', 'member_level', 'accounts_payable', 'supplier', 'contacts', 'products')
+        fields = (
+            'pk',
+            'name',
+            'member_type',
+            'member_level',
+            'accounts_payable',
+            'supplier',
+            'contacts',
+            'products',
+        )
         extra_kwargs = {
             'member_level': {'required': False, 'read_only': True},
             'pk': {'read_only': True},
@@ -37,6 +50,7 @@ class MemberSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
+        """Покажем последний добавленный контакт"""
         data = super().to_representation(instance)
         data['contacts'] = data['contacts'][:1]
         return data
@@ -53,10 +67,10 @@ class MemberSerializer(serializers.ModelSerializer):
 
         if rel_validate_data is not None:
             related_obj, created = Contact.objects.get_or_create(
-                    pk=getattr(rel_data, 'pk', None),
-                    member_id=member_pk,
-                    defaults=rel_validate_data
-                )
+                pk=getattr(rel_data, 'pk', None),
+                member_id=member_pk,
+                defaults=rel_validate_data,
+            )
             if not created:
                 for key, value in rel_validate_data.items():
                     setattr(related_obj, key, value)
@@ -68,13 +82,14 @@ class MemberSerializer(serializers.ModelSerializer):
 
         return instance
 
-
     def create(self, validated_data):
         contact_data = validated_data.pop('contacts')
         member = Member.objects.create(**validated_data)
         if member:
-            if len(contact_data)>0:
-                contact = Contact.objects.get_or_create(member=member, **contact_data[0])
+            if len(contact_data) > 0:
+                contact = Contact.objects.get_or_create(
+                    member=member, **contact_data[0]
+                )
 
         return member
 

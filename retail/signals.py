@@ -1,4 +1,4 @@
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from retail.models import Member
@@ -12,7 +12,10 @@ def member_pre_save_handler(sender, instance: Member, *args, **kwargs):
     if instance.pk:
         existing_instance: Member = Member.objects.filter(pk=instance.pk).first()
         if existing_instance is not None:
-            if instance.member_type != existing_instance.member_type or instance.supplier != existing_instance.supplier:
+            if (
+                instance.member_type != existing_instance.member_type
+                or instance.supplier != existing_instance.supplier
+            ):
                 instance.need_recalc = True
 
 

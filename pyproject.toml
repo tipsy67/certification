@@ -16,6 +16,10 @@ djangorestframework-simplejwt = "^5.4.0"
 drf-yasg = "^1.21.8"
 
 
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+isort = "^5.13.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
