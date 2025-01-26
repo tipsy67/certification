@@ -24,7 +24,9 @@ class ContactWithMemberSerializer(serializers.ModelSerializer):
         model = Contact
         fields = ('id', 'email', 'country', 'city', 'street', 'building', 'member')
         read_only_fields = []
-
+        extra_kwargs = {
+            'member': {'required': False},
+        }
 
 class MemberSerializer(serializers.ModelSerializer):
     contacts = ContactWithMemberSerializer(
