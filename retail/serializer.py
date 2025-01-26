@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from retail.models import Contact, Member, Product
 from retail.src.field_validators import are_fields_valid
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -50,7 +52,7 @@ class MemberSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
-        """Покажем последний добавленный контакт"""
+        """Покажем только последний добавленный контакт"""
         data = super().to_representation(instance)
         data['contacts'] = data['contacts'][:1]
         return data
