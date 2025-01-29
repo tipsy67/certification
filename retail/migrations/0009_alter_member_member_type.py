@@ -13,6 +13,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='member',
             name='member_type',
-            field=models.CharField(choices=[('PLNT', 'Завод'), ('INDV', 'Индивидуальный предприниматель'), ('RTL', 'Розничная сеть')], default='PLNT', max_length=4, verbose_name='тип звена'),
+            field=models.CharField(
+                choices=[
+                    ('PLNT', 'Завод'),
+                    ('INDV', 'Индивидуальный предприниматель'),
+                    ('RTL', 'Розничная сеть'),
+                ],
+                default='PLNT',
+                max_length=4,
+                verbose_name='тип звена',
+            ),
         ),
     ]

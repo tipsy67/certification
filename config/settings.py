@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,10 +24,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #dev
+    # dev
     'rest_framework',
     'rest_framework_simplejwt',
-    #app
+    'drf_yasg',
+    'django_filters',
+    # app
     'retail',
     'users',
 ]
@@ -125,6 +128,7 @@ REST_FRAMEWORK = {
         # "rest_framework.permissions.IsAuthenticated",
         "rest_framework.permissions.AllowAny",
     ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 SIMPLE_JWT = {
@@ -132,4 +136,4 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-NULLABLE = {'null':True, 'blank':True}
+NULLABLE = {'null': True, 'blank': True}

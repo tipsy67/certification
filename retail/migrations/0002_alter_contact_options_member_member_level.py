@@ -12,12 +12,18 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='contact',
-            options={'ordering': ['-updated_at'], 'verbose_name': 'контакт', 'verbose_name_plural': 'контакты'},
+            options={
+                'ordering': ['-updated_at'],
+                'verbose_name': 'контакт',
+                'verbose_name_plural': 'контакты',
+            },
         ),
         migrations.AddField(
             model_name='member',
             name='member_level',
-            field=models.PositiveSmallIntegerField(default=0, editable=False, verbose_name='уровень'),
+            field=models.PositiveSmallIntegerField(
+                default=0, editable=False, verbose_name='уровень'
+            ),
             preserve_default=False,
         ),
     ]

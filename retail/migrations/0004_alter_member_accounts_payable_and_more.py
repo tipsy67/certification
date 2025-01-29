@@ -14,21 +14,39 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='member',
             name='accounts_payable',
-            field=models.DecimalField(decimal_places=2, default=0, max_digits=15, verbose_name='кредиторка'),
+            field=models.DecimalField(
+                decimal_places=2, default=0, max_digits=15, verbose_name='кредиторка'
+            ),
         ),
         migrations.AlterField(
             model_name='member',
             name='member_level',
-            field=models.PositiveSmallIntegerField(default=0, editable=False, verbose_name='уровень'),
+            field=models.PositiveSmallIntegerField(
+                default=0, editable=False, verbose_name='уровень'
+            ),
         ),
         migrations.AlterField(
             model_name='member',
             name='member_type',
-            field=models.CharField(choices=[('PLNT', 'Завод'), ('INDV', 'Индивидуальный предприниматель'), ('RTL', 'Розничная сеть')], max_length=4, verbose_name='тип звена'),
+            field=models.CharField(
+                choices=[
+                    ('PLNT', 'Завод'),
+                    ('INDV', 'Индивидуальный предприниматель'),
+                    ('RTL', 'Розничная сеть'),
+                ],
+                max_length=4,
+                verbose_name='тип звена',
+            ),
         ),
         migrations.AlterField(
             model_name='member',
             name='supplier',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='retail.member', verbose_name='поставщик'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to='retail.member',
+                verbose_name='поставщик',
+            ),
         ),
     ]

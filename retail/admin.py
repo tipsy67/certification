@@ -1,18 +1,33 @@
 from copy import copy
 
 from django.contrib import admin
-
 from django.urls import reverse
 from django.utils.html import format_html
 
 from retail.forms import MemberForm
-from retail.models import Contact, Product, Member
+from retail.models import Contact, Member, Product, City, Country
+
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
+
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
 
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('email', 'country', 'city', 'created_at', 'updated_at', )
-
+    list_display = (
+        'email',
+        'country',
+        'city',
+        'created_at',
+        'updated_at',
+        'member',
+    )
 
 
 @admin.register(Product)
@@ -31,11 +46,21 @@ class ProductAdmin(admin.ModelAdmin):
 
         self.message_user(request, f"Скопировано {count} записи(ей).")
 
+
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
     form = MemberForm
-    list_display = ('pk', 'name', 'city', 'display_member_type', 'member_level', 'accounts_payable', 'updated_at', 'supplier_link')
-    list_display_links = ('name', )
+    list_display = (
+        'pk',
+        'name',
+        'city',
+        'display_member_type',
+        'member_level',
+        'accounts_payable',
+        'updated_at',
+        'supplier_link',
+    )
+    list_display_links = ('name',)
     actions = ('clear_accounts_payable',)
 
     search_fields = ('name', 'contacts__city')

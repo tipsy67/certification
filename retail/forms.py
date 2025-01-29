@@ -1,6 +1,6 @@
 from django import forms
-
 from django.core.exceptions import ValidationError
+
 from retail.models import Member
 from retail.src.field_validators import are_fields_valid
 

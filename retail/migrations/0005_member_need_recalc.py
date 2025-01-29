@@ -13,6 +13,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='need_recalc',
-            field=models.BooleanField(default=False, editable=False, verbose_name='уровень'),
+            field=models.BooleanField(
+                default=False, editable=False, verbose_name='уровень'
+            ),
         ),
     ]
