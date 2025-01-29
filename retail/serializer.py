@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 
-from retail.models import Contact, Member, Product, Country, City
+from retail.models import City, Contact, Country, Member, Product
 from retail.src.field_validators import are_fields_valid
 
 

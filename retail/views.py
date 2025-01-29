@@ -1,18 +1,15 @@
+from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
+
 from retail.filters import MemberFilter
-from django.db.models import Prefetch
-from retail.models import Contact, Member, Product, Country, City
+from retail.models import City, Contact, Country, Member, Product
 from retail.permissions import IsActive
-from retail.serializer import (
-    ContactSerializer,
-    MemberSerializer,
-    ProductSerializer,
-    CountrySerializer,
-    CitySerializer,
-)
+from retail.serializer import (CitySerializer, ContactSerializer,
+                               CountrySerializer, MemberSerializer,
+                               ProductSerializer)
 
 
 class CountryViewSet(viewsets.ModelViewSet):
