@@ -10,6 +10,7 @@ MEMBER_TYPE = (
     ('RTL', 'Розничная сеть'),
 )
 
+
 class City(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -17,6 +18,8 @@ class City(models.Model):
         verbose_name = 'город'
         verbose_name_plural = 'города'
 
+    def __str__(self):
+        return f"{self.name}"
 
 class Country(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -25,10 +28,15 @@ class Country(models.Model):
         verbose_name = 'страна'
         verbose_name_plural = 'страны'
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Contact(models.Model):
     email = models.EmailField(verbose_name='эл.почта')
-    country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name='страна')
+    country = models.ForeignKey(
+        Country, on_delete=models.PROTECT, verbose_name='страна'
+    )
     city = models.ForeignKey(City, on_delete=models.PROTECT, verbose_name='город')
     street = models.CharField(max_length=100, verbose_name='улица')
     building = models.CharField(max_length=100, verbose_name='строение')

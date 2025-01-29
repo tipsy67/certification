@@ -6,8 +6,13 @@ from retail.filters import MemberFilter
 from django.db.models import Prefetch
 from retail.models import Contact, Member, Product, Country, City
 from retail.permissions import IsActive
-from retail.serializer import (ContactSerializer, MemberSerializer,
-                               ProductSerializer, CountrySerializer, CitySerializer)
+from retail.serializer import (
+    ContactSerializer,
+    MemberSerializer,
+    ProductSerializer,
+    CountrySerializer,
+    CitySerializer,
+)
 
 
 class CountryViewSet(viewsets.ModelViewSet):
@@ -42,14 +47,17 @@ class MemberViewSet(viewsets.ModelViewSet):
     # filter_backends = (DjangoFilterBackend,)
     # filterset_class = MemberFilter
 
-
     def list(self, request, *args, **kwargs):
         contacts_qs = Contact.objects.all()
         country = request.query_params.get('country')
         if country:
             contacts_qs = contacts_qs.filter(country=country)
-            queryset = Member.objects.prefetch_related(Prefetch('contacts',contacts_qs)).exclude(contacts=None)
+            queryset = Member.objects.prefetch_related(
+                Prefetch('contacts', contacts_qs)
+            ).exclude(contacts=None)
         else:
-            queryset = Member.objects.prefetch_related(Prefetch('contacts',contacts_qs))
+            queryset = Member.objects.prefetch_related(
+                Prefetch('contacts', contacts_qs)
+            )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

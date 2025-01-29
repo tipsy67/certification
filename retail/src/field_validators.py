@@ -8,7 +8,7 @@ def are_fields_valid(data: dict, pk: int) -> (bool, str | None):
     supplier = data.get('supplier', None)
     member_type = data.get('member_type', None)
 
-    if member_type != GRAND_LEVEL and supplier is None:
+    if member_type is not None and member_type != GRAND_LEVEL and supplier is None:
         context = (
             f"Параметр 'supplier'(поставщик) обязателен для типа организации,"
             f" отличной от типа '{GRAND_LEVEL}'({GRAND_NAME})"

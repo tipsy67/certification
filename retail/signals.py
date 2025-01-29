@@ -15,6 +15,7 @@ def member_pre_save_handler(sender, instance: Member, *args, **kwargs):
             if (
                 instance.member_type != existing_instance.member_type
                 or instance.supplier != existing_instance.supplier
+                or instance.member_level != existing_instance.member_level
             ):
                 instance.need_recalc = True
 

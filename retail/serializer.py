@@ -4,15 +4,18 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from retail.models import Contact, Member, Product, Country, City
 from retail.src.field_validators import are_fields_valid
 
+
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = '__all__'
 
+
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = '__all__'
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,13 +35,9 @@ class ContactWithMemberSerializer(serializers.ModelSerializer):
     # country_name = serializers.CharField(source='country.name')
     # city_name = serializers.CharField(source='city.name')
     country = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset=Country.objects.all()
+        slug_field='name', queryset=Country.objects.all()
     )
-    city = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset=City.objects.all()
-    )
+    city = serializers.SlugRelatedField(slug_field='name', queryset=City.objects.all())
 
     class Meta:
         model = Contact
@@ -47,6 +46,7 @@ class ContactWithMemberSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'member': {'required': False},
         }
+
 
 class MemberSerializer(serializers.ModelSerializer):
     contacts = ContactWithMemberSerializer(
@@ -112,16 +112,15 @@ class MemberSerializer(serializers.ModelSerializer):
         if member:
             if len(contacts_data) > 0:
                 for one_contact_data in contacts_data:
-                    contact = Contact.objects.create(
-                        member=member, **one_contact_data
-                    )
+                    contact = Contact.objects.create(member=member, **one_contact_data)
 
         return member
 
     def validate(self, data):
-        pk = self.instance.pk
-        valid, context = are_fields_valid(data, pk)
-        if not valid:
-            raise serializers.ValidationError(context)
+        if self.instance is not None:
+            pk = self.instance.pk
+            valid, context = are_fields_valid(data, pk)
+            if not valid:
+                raise serializers.ValidationError(context)
 
         return data
