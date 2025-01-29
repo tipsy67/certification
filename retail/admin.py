@@ -5,7 +5,17 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from retail.forms import MemberForm
-from retail.models import Contact, Member, Product
+from retail.models import Contact, Member, Product, City, Country
+
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
+
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
 
 
 @admin.register(Contact)
