@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from retail.models import Country, City, Member, Contact
+from retail.models import City, Contact, Country, Member
 from users.models import User
 
 
@@ -46,7 +46,9 @@ class MemberTestCase(APITestCase):
             }
         ]
 
-        cls.user = User.objects.create_user(username="test_user", password="test_user_password")
+        cls.user = User.objects.create_user(
+            username="test_user", password="test_user_password"
+        )
 
     def setUp(self):
         refresh = RefreshToken.for_user(self.user)
@@ -60,7 +62,6 @@ class MemberTestCase(APITestCase):
 
         response_data = response.json()
         self.assertEqual(response_data, self.etalon_data)
-
 
     def test_lesson_view(self):
         url = reverse("retail:member-detail", args=(self.member.pk,))
@@ -81,7 +82,6 @@ class MemberTestCase(APITestCase):
         response_data = response.json()
         self.assertEqual(response_data.get("name"), "Test update")
 
-
     def test_lesson_destroy(self):
         url = reverse("retail:member-detail", args=(self.member.pk,))
         response = self.client.delete(url)
@@ -90,25 +90,27 @@ class MemberTestCase(APITestCase):
 
         self.assertEqual(Member.objects.all().count(), 0)
 
-
     def test_lesson_create(self):
         url = reverse("retail:member-list")
 
-        data = {"name": "Mazongo",
-                "contacts": [
-                    {
-                        "email": "test@test.test",
-                        "country": "country",
-                        "city": "city",
-                        "street": "street",
-                        "building": "building"
-                    }
-                ]}
+        data = {
+            "name": "Mazongo",
+            "contacts": [
+                {
+                    "email": "test@test.test",
+                    "country": "country",
+                    "city": "city",
+                    "street": "street",
+                    "building": "building",
+                }
+            ],
+        }
 
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         self.assertEqual(Member.objects.all().count(), 2)
+
 
 class AdditionalTestCase(APITestCase):
 
@@ -117,10 +119,18 @@ class AdditionalTestCase(APITestCase):
         cls.country = Country.objects.create(name="country")
         cls.city = City.objects.create(name="city")
         cls.member1 = Member.objects.create(name="Member1", member_type="PLNT")
-        cls.member2 = Member.objects.create(name="Member2", member_type="RTL", supplier=cls.member1)
-        cls.member3_1 = Member.objects.create(name="Member3_1", member_type="INDV", supplier=cls.member2)
-        cls.member3_2 = Member.objects.create(name="Member3_2", member_type="INDV", supplier=cls.member2)
-        cls.member4 = Member.objects.create(name="Member4", member_type="INDV", supplier=cls.member3_1)
+        cls.member2 = Member.objects.create(
+            name="Member2", member_type="RTL", supplier=cls.member1
+        )
+        cls.member3_1 = Member.objects.create(
+            name="Member3_1", member_type="INDV", supplier=cls.member2
+        )
+        cls.member3_2 = Member.objects.create(
+            name="Member3_2", member_type="INDV", supplier=cls.member2
+        )
+        cls.member4 = Member.objects.create(
+            name="Member4", member_type="INDV", supplier=cls.member3_1
+        )
 
         cls.contact = Contact.objects.create(
             email="test@test.test",
@@ -131,17 +141,17 @@ class AdditionalTestCase(APITestCase):
             member=cls.member1,
         )
 
-
-        cls.user = User.objects.create_user(username="test_user", password="test_user_password")
+        cls.user = User.objects.create_user(
+            username="test_user", password="test_user_password"
+        )
 
     def setUp(self):
         refresh = RefreshToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
 
-
     def test_check_validate(self):
         url = reverse("retail:member-detail", args=(self.member1.pk,))
-        #check 1
+        # check 1
         print("check 1 -------------------------")
         data = {"member_type": "RTL"}
 
@@ -149,9 +159,16 @@ class AdditionalTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response_data = response.json()
-        self.assertEqual(response_data, {'non_field_errors': ["Параметр 'supplier'(поставщик) обязателен для типа организации, отличной от типа 'PLNT'(Завод)"]})
+        self.assertEqual(
+            response_data,
+            {
+                'non_field_errors': [
+                    "Параметр 'supplier'(поставщик) обязателен для типа организации, отличной от типа 'PLNT'(Завод)"
+                ]
+            },
+        )
 
-        #check 2
+        # check 2
         print("check 2 -------------------------")
         url = reverse("retail:member-detail", args=(self.member1.pk,))
         data = {"supplier": f"{self.member1.pk}"}
@@ -160,9 +177,16 @@ class AdditionalTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response_data = response.json()
-        self.assertEqual(response_data, {'non_field_errors': ["Параметр 'supplier'(поставщик) должен быть 'null' если 'member_type'(тип звена)='PLNT'(Завод) или 'null' "]})
+        self.assertEqual(
+            response_data,
+            {
+                'non_field_errors': [
+                    "Параметр 'supplier'(поставщик) должен быть 'null' если 'member_type'(тип звена)='PLNT'(Завод) или 'null' "
+                ]
+            },
+        )
 
-        #check 3
+        # check 3
         print("check 3 -------------------------")
         data = {"member_type": "RTL", "supplier": f"{self.member1.pk}"}
 
@@ -170,9 +194,12 @@ class AdditionalTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response_data = response.json()
-        self.assertEqual(response_data, {'non_field_errors': ['Поставщик не может ссылаться сам на себя']})
+        self.assertEqual(
+            response_data,
+            {'non_field_errors': ['Поставщик не может ссылаться сам на себя']},
+        )
 
-        #check 3
+        # check 3
         print("check 4 -------------------------")
         data = {"member_type": "RTL", "supplier": f"{self.member4.pk}"}
 
@@ -180,12 +207,14 @@ class AdditionalTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         response_data = response.json()
-        self.assertEqual(response_data, {'non_field_errors': ['Циклические ссылки в сети не допустимы']})
-
+        self.assertEqual(
+            response_data,
+            {'non_field_errors': ['Циклические ссылки в сети не допустимы']},
+        )
 
     def test_check_recalc(self):
         url = reverse("retail:member-detail", args=(self.member2.pk,))
-        #check recalc member level
+        # check recalc member level
         print("check recalc member level --------")
         data = {"member_type": "PLNT"}
 
