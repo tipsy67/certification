@@ -10,11 +10,26 @@ MEMBER_TYPE = (
     ('RTL', 'Розничная сеть'),
 )
 
+class City(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = 'город'
+        verbose_name_plural = 'города'
+
+
+class Country(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = 'страна'
+        verbose_name_plural = 'страны'
+
 
 class Contact(models.Model):
     email = models.EmailField(verbose_name='эл.почта')
-    country = models.CharField(max_length=100, verbose_name='страна')
-    city = models.CharField(max_length=100, verbose_name='город')
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, verbose_name='страна')
+    city = models.ForeignKey(City, on_delete=models.PROTECT, verbose_name='город')
     street = models.CharField(max_length=100, verbose_name='улица')
     building = models.CharField(max_length=100, verbose_name='строение')
     created_at = models.DateField(auto_now_add=True, verbose_name='дата создания')

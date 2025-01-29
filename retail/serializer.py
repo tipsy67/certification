@@ -1,10 +1,18 @@
 from rest_framework import serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from retail.models import Contact, Member, Product
+from retail.models import Contact, Member, Product, Country, City
 from retail.src.field_validators import are_fields_valid
 
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = '__all__'
 
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,6 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Contact
         fields = '__all__'
@@ -20,6 +29,17 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class ContactWithMemberSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
+    # country_name = serializers.CharField(source='country.name')
+    # city_name = serializers.CharField(source='city.name')
+    country = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Country.objects.all()
+    )
+    city = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=City.objects.all()
+    )
+
     class Meta:
         model = Contact
         fields = ('id', 'email', 'country', 'city', 'street', 'building', 'member')

@@ -4,10 +4,22 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from retail.filters import MemberFilter
 from django.db.models import Prefetch
-from retail.models import Contact, Member, Product
+from retail.models import Contact, Member, Product, Country, City
 from retail.permissions import IsActive
 from retail.serializer import (ContactSerializer, MemberSerializer,
-                               ProductSerializer)
+                               ProductSerializer, CountrySerializer, CitySerializer)
+
+
+class CountryViewSet(viewsets.ModelViewSet):
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer
+    permission_classes = (IsActive, IsAuthenticated)
+
+
+class CityViewSet(viewsets.ModelViewSet):
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
+    permission_classes = (IsActive, IsAuthenticated)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
