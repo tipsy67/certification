@@ -5,9 +5,13 @@ from rest_framework.response import Response
 
 from retail.models import City, Contact, Country, Member, Product
 from retail.permissions import IsActive
-from retail.serializer import (CitySerializer, ContactSerializer,
-                               CountrySerializer, MemberSerializer,
-                               ProductSerializer)
+from retail.serializer import (
+    CitySerializer,
+    ContactSerializer,
+    CountrySerializer,
+    MemberSerializer,
+    ProductSerializer,
+)
 
 
 class CountryViewSet(viewsets.ModelViewSet):
