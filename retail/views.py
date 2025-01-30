@@ -1,10 +1,9 @@
 from django.db.models import Prefetch
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from retail.filters import MemberFilter
+from django.db.models import Q
 from retail.models import City, Contact, Country, Member, Product
 from retail.permissions import IsActive
 from retail.serializer import (
@@ -52,10 +51,12 @@ class MemberViewSet(viewsets.ModelViewSet):
         contacts_qs = Contact.objects.all()
         country = request.query_params.get('country')
         if country:
-            contacts_qs = contacts_qs.filter(country=country)
-            queryset = Member.objects.prefetch_related(
-                Prefetch('contacts', contacts_qs)
-            ).exclude(contacts=None)
+            # contacts_qs = contacts_qs.filter(country__name=country)
+            # queryset = Member.objects.prefetch_related(
+            #     Prefetch('contacts', contacts_qs)
+            # )
+            queryset = Member.objects.filter(contacts__country__name=country)
+
         else:
             queryset = Member.objects.prefetch_related(
                 Prefetch('contacts', contacts_qs)

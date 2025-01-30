@@ -63,6 +63,21 @@ class MemberTestCase(APITestCase):
         response_data = response.json()
         self.assertEqual(response_data, self.etalon_data)
 
+    def test_member_list_filter(self):
+        url = reverse("retail:member-list")
+
+        response = self.client.get(url, {'country': 'country'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response_data = response.json()
+        self.assertEqual(len(response_data), 1)
+
+        response = self.client.get(url, {'country': 'country1'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response_data = response.json()
+        self.assertEqual(len(response_data), 0)
+
     def test_lesson_view(self):
         url = reverse("retail:member-detail", args=(self.member.pk,))
 
