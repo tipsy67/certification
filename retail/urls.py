@@ -2,13 +2,8 @@ from django.urls import include, path
 from rest_framework import routers
 
 from retail.apps import RetailConfig
-from retail.views import (
-    CityViewSet,
-    ContactViewSet,
-    CountryViewSet,
-    MemberViewSet,
-    ProductViewSet,
-)
+from retail.views import (CityViewSet, ContactViewSet, CountryViewSet,
+                          MemberViewSet, ProductViewSet)
 
 app_name = RetailConfig.name
 
