@@ -5,13 +5,9 @@ from rest_framework.response import Response
 
 from retail.models import City, Contact, Country, Member, Product
 from retail.permissions import IsActive
-from retail.serializer import (
-    CitySerializer,
-    ContactSerializer,
-    CountrySerializer,
-    MemberSerializer,
-    ProductSerializer,
-)
+from retail.serializer import (CitySerializer, ContactSerializer,
+                               CountrySerializer, MemberSerializer,
+                               ProductSerializer)
 
 
 class CountryViewSet(viewsets.ModelViewSet):
@@ -42,9 +38,6 @@ class MemberViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
     permission_classes = (IsActive, IsAuthenticated)
-
-    # filter_backends = (DjangoFilterBackend,)
-    # filterset_class = MemberFilter
 
     def list(self, request, *args, **kwargs):
         contacts_qs = Contact.objects.all()

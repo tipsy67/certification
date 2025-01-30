@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.filters import OrderingFilter, SearchFilter
 
 from retail.models import City, Contact, Country, Member, Product
 from retail.src.field_validators import are_fields_valid
@@ -32,8 +31,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class ContactWithMemberSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
-    # country_name = serializers.CharField(source='country.name')
-    # city_name = serializers.CharField(source='city.name')
+
     country = serializers.SlugRelatedField(
         slug_field='name', queryset=Country.objects.all()
     )
@@ -81,12 +79,8 @@ class MemberSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         contacts_validated_data = validated_data.pop('contacts', [])
-        # rel_validate_data = next(iter(rel_obj_validated_data or []), None)
 
-        # rel_obj_data = self.initial_data.get('contacts')
-        # rel_data = next(iter(rel_obj_data or []), None)
         member_id = instance.id
-        # rel_data = Contact.objects.filter(member=member_pk).first()
 
         for one_contact_validated_data in contacts_validated_data:
             if one_contact_validated_data is not None:
