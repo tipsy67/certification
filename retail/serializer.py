@@ -96,6 +96,8 @@ class MemberSerializer(serializers.ModelSerializer):
 
         for key, value in validated_data.items():
             setattr(instance, key, value)
+        if validated_data.get('supplier') is None:
+            setattr(instance, 'supplier', None)
         instance.save()
 
         return instance
