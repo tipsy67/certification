@@ -1,9 +1,8 @@
-from django.db.models import Prefetch
-from django.db.models import Count
+from django.db.models import Count, Prefetch, Q
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db.models import Q
+
 from retail.models import City, Contact, Country, Member, Product
 from retail.permissions import IsActive
 from retail.serializer import (
